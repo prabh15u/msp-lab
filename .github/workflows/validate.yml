@@ -1,0 +1,25 @@
+name: Validate
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.12.6
+      - run: tofu fmt -check -recursive
+      - name: Validate all roots without Azure access
+        shell: bash
+        run: |
+          set -euo pipefail
+          for root in environments/bootstrap environments/github-identity customers/summit-property-management/lab; do
+            tofu -chdir="$root" init -backend=false -input=false
+            tofu -chdir="$root" validate
+          done
+

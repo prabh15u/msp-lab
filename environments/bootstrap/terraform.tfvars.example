@@ -1,0 +1,4 @@
+subscription_id = "YOUR-SUBSCRIPTION-UUID"
+storage_account_name = "YOURUNIQUESTATENAME"
+operator_object_id = "YOUR-ENTRA-USER-OBJECT-UUID"
+

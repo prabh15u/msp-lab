@@ -1,0 +1,58 @@
+name: Azure customer plan
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: summit-property-management-lab
+  cancel-in-progress: false
+jobs:
+  plan:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: summit-lab
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      ARM_USE_OIDC: "true"
+      ARM_USE_AZUREAD: "true"
+      ARM_CLIENT_ID: ${{ vars.ARM_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }}
+      TF_VAR_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
+      STATE_STORAGE_ACCOUNT: ${{ vars.STATE_STORAGE_ACCOUNT }}
+      TF_IN_AUTOMATION: "true"
+    defaults:
+      run:
+        working-directory: customers/summit-property-management/lab
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.12.6
+          tofu_wrapper: false
+      - name: Check configuration
+        run: |
+          set -euo pipefail
+          for name in ARM_CLIENT_ID ARM_TENANT_ID ARM_SUBSCRIPTION_ID STATE_STORAGE_ACCOUNT; do
+            test -n "${!name}" || { echo "Missing environment variable: $name"; exit 1; }
+          done
+      - name: Initialize customer state
+        run: |
+          tofu init -input=false \
+            -backend-config="resource_group_name=rg-msp-lab-state" \
+            -backend-config="storage_account_name=$STATE_STORAGE_ACCOUNT" \
+            -backend-config="container_name=summit-property-management" \
+            -backend-config="key=lab.tfstate"
+      - run: tofu validate
+      - run: tofu plan -input=false -lock-timeout=5m -out=customer.tfplan
+      - name: Enforce baseline resource types
+        run: |
+          tofu show -json customer.tfplan > customer-plan.json
+          python "$GITHUB_WORKSPACE/policies/check_plan.py" customer-plan.json
+      - name: Remove local plan files
+        if: always()
+        run: rm -f customer.tfplan customer-plan.json
+

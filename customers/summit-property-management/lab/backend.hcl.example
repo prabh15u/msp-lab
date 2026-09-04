@@ -1,0 +1,5 @@
+resource_group_name = "rg-msp-lab-state"
+storage_account_name = "YOURUNIQUESTATENAME"
+container_name = "summit-property-management"
+key = "lab.tfstate"
+
