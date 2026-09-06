@@ -8,4 +8,15 @@ variable "subscription_id" {
   type        = string
   description = "Azure subscription UUID."
 }
+provider "azuread" {
+  tenant_id = var.tenant_id
+}
 
+variable "tenant_id" {
+  type = string
+}
+
+variable "github_app_client_id" {
+  type        = string
+  description = "Application (client) ID of the existing app registration."
+}
