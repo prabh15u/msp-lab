@@ -1,4 +1,6 @@
-subscription_id = "YOUR-SUBSCRIPTION-UUID"
-state_storage_account_name = "YOURUNIQUESTATENAME"
-github_repository = "YOUR-OWNER/YOUR-REPO"
+subscription_id =
+tenant_id       =
 
+application_name   =
+github_repository  = 
+github_environment = 
