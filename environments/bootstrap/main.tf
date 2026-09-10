@@ -20,25 +20,25 @@ resource "azurerm_resource_group" "state" {
   tags     = { managed_by = "opentofu", purpose = "msp-lab-state" }
 }
 resource "azurerm_storage_account" "state" {
-  name                            = var.storage_account_name
-  resource_group_name             = azurerm_resource_group.state.name
-  location                        = azurerm_resource_group.state.location
+  name                = var.storage_account_name
+  resource_group_name = azurerm_resource_group.state.name
+  location            = azurerm_resource_group.state.location
 
-  account_tier                    = "Standard"
-  account_replication_type        = "LRS"
-  min_tls_version                 = "TLS1_2"
-  
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  min_tls_version          = "TLS1_2"
+
   shared_access_key_enabled       = false
   default_to_oauth_authentication = true
   allow_nested_items_to_be_public = false
   public_network_access_enabled   = true
-  
+
   blob_properties {
     versioning_enabled = true
     delete_retention_policy { days = 7 }
     container_delete_retention_policy { days = 7 }
   }
-  
+
   tags = azurerm_resource_group.state.tags
   lifecycle { prevent_destroy = true }
 }

@@ -9,6 +9,7 @@ concurrency:
 jobs:
   plan:
     if: github.ref == 'refs/heads/main'
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     environment: summit-lab
     permissions:
@@ -41,7 +42,7 @@ jobs:
           done
       - name: Initialize customer state
         run: |
-          tofu init -input=false \
+          tofu init -input=false -lockfile=readonly \
             -backend-config="resource_group_name=rg-msp-lab-state" \
             -backend-config="storage_account_name=$STATE_STORAGE_ACCOUNT" \
             -backend-config="container_name=summit-property-management" \
