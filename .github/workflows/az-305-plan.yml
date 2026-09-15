@@ -15,6 +15,7 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    environment: azure-oidc
     permissions:
       contents: read
       id-token: write
