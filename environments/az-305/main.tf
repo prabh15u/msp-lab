@@ -1,6 +1,6 @@
 resource "azurerm_resource_group" "lab" {
   name     = "rg-az305"
-  location = "West US 2"
+  location = "West US"
 }
 
 resource "azurerm_virtual_network" "lab" {
