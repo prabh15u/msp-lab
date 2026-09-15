@@ -23,8 +23,8 @@ jobs:
       run:
         working-directory: environments/az-305
     env:
-      TF_VAR_admin_username: ${{ vars.TF_VAR_ADMIN_USERNAME }}
-      TF_VAR_admin_public_key: ${{ vars.TF_VAR_ADMIN_PUBLIC_KEY }}
+      TF_VAR_admin_username: ${{ secrets.TF_VAR_ADMIN_USERNAME }}
+      TF_VAR_admin_public_key: ${{ secrets.TF_VAR_ADMIN_PUBLIC_KEY }}
       ARM_USE_OIDC: "true"
       ARM_USE_AZUREAD: "true"
       ARM_CLIENT_ID: ${{ vars.ARM_CLIENT_ID }}
