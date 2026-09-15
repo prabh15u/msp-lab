@@ -1,6 +1,7 @@
 name: AZ-305 Terraform Test
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - az-305-test
@@ -37,8 +38,14 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
 
-      - run: terraform init
-
+      - name: Terraform Init
+        run: |
+            terraform init \
+            -backend-config="resource_group_name=${{ vars.STATE_RESOURCE_GROUP }}" \
+            -backend-config="storage_account_name=${{ vars.STATE_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ vars.STATE_CONTAINER }}" \
+            -backend-config="key=az305/terraform.tfstate"
+            
       - run: terraform fmt -check
 
       - run: terraform validate
