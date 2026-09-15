@@ -1,10 +1,10 @@
-name: AZ-305 Terraform Apply
+name: AZ-305 OpenTofu Apply
 
 on:
   workflow_dispatch:
 
 jobs:
-  terraform:
+  tofu:
     runs-on: ubuntu-latest
     environment: azure-oidc
     permissions:
@@ -29,18 +29,21 @@ jobs:
         with:
           ref: az-305-test
 
-      - uses: hashicorp/setup-terraform@v3
+      - uses: opentofu/setup-opentofu@9d84900f3238fab8cd84ce47d658d25dd008be2f # v1
+        with:
+          tofu_version: 1.12.6
+          tofu_wrapper: false
 
-      - name: Terraform Init
+      - name: OpenTofu Init
         run: |
-          terraform init -reconfigure \
+          tofu init -reconfigure \
             -backend-config="resource_group_name=${{ vars.STATE_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ vars.STATE_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=az-305" \
             -backend-config="key=az305/terraform.tfstate"
 
-      - run: terraform fmt -check
+      - run: tofu fmt -check
 
-      - run: terraform validate
+      - run: tofu validate
 
-      - run: terraform apply -auto-approve -input=false
+      - run: tofu apply -auto-approve -input=false
