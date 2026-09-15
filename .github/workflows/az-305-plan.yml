@@ -35,7 +35,16 @@ jobs:
       TF_IN_AUTOMATION: "true"
     steps:
       - uses: actions/checkout@v4
-
+        with:
+          ref: az-305-test
+      - name: Debug workspace
+        run: |
+          pwd
+          git branch --show-current
+          git rev-parse HEAD
+          ls -la
+          ls -la environments
+          find environments -maxdepth 2 -type d | sort
       - uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
