@@ -15,7 +15,6 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
-    environment: az-305-lab
     permissions:
       contents: read
       id-token: write
@@ -52,7 +51,7 @@ jobs:
           terraform init -reconfigure \
             -backend-config="resource_group_name=${{ vars.STATE_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ vars.STATE_STORAGE_ACCOUNT }}" \
-            -backend-config="container_name=${{ vars.STATE_CONTAINER }}" \
+            -backend-config="container_name=az-305" \
             -backend-config="key=az305/terraform.tfstate"
             
       - run: terraform fmt -check
