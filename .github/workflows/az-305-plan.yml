@@ -1,0 +1,53 @@
+name: AZ-305 Terraform Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - az-305-test
+    paths:
+      - "environments/az305/**"
+
+  pull_request:
+    paths:
+      - "environments/az305/**"
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    environment: az-305-lab
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: environments/az305
+    env:
+      TF_VAR_admin_username: ${{ secrets.TF_VAR_ADMIN_USERNAME }}
+      TF_VAR_admin_public_key: ${{ secrets.TF_VAR_ADMIN_PUBLIC_KEY }}
+      ARM_USE_OIDC: "true"
+      ARM_USE_AZUREAD: "true"
+      ARM_CLIENT_ID: ${{ vars.ARM_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }}
+      TF_VAR_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
+      STATE_STORAGE_ACCOUNT: ${{ vars.STATE_STORAGE_ACCOUNT }}
+      TF_IN_AUTOMATION: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: |
+            terraform init \
+            -backend-config="resource_group_name=${{ vars.STATE_RESOURCE_GROUP }}" \
+            -backend-config="storage_account_name=${{ vars.STATE_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ vars.STATE_CONTAINER }}" \
+            -backend-config="key=az305/terraform.tfstate"
+            
+      - run: terraform fmt -check
+
+      - run: terraform validate
+
+      - run: terraform plan -input=false
