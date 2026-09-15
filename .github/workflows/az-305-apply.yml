@@ -26,8 +26,6 @@ jobs:
       TF_IN_AUTOMATION: "true"
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: az-305-test
 
       - uses: opentofu/setup-opentofu@9d84900f3238fab8cd84ce47d658d25dd008be2f # v1
         with:
